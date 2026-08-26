@@ -1,12 +1,14 @@
 # Automated Data Pipeline & Reporting System
 
+![Python](https://img.shields.io/badge/Python-3.12-blue) ![SQL](https://img.shields.io/badge/SQL-Analytics-orange) ![Power%20BI](https://img.shields.io/badge/Power%20BI-Dashboard-yellow) ![Automation](https://img.shields.io/badge/Automation-GitHub%20Actions-black)
+
 > **Python • REST API • SQL • Power BI • Automation**
 
 ## Executive Summary
 
-A production-style reporting pipeline that retrieves product data from a REST API, validates and transforms the payload, loads it into a relational SQL database, creates analytics-ready views, and optionally triggers a Power BI dataset refresh.
+A production-style analytics pipeline that retrieves product data from a REST API, validates and transforms the payload, loads it into SQL, creates analytics-ready reporting views, and can trigger a Power BI dataset refresh.
 
-**REST API → Python ETL → SQL Database → Reporting Views → Power BI → Automated Refresh**
+**REST API → Python ETL → SQL → Reporting Views → Power BI → Automated Refresh**
 
 ### Business Scenario
 
@@ -16,25 +18,19 @@ The solution supports product count, pricing, ratings, review trends, category p
 
 ## Architecture
 
-```text
-REST API
-   ↓ JSON
-Python ETL
-   ├─ Extract
-   ├─ Validate
-   └─ Transform
-   ↓
-SQL Database
-   ├─ raw_products
-   ├─ pipeline_runs
-   └─ reporting views
-   ↓
-Power BI
-   ├─ KPI dashboard
-   ├─ Category analysis
-   ├─ Catalog quality
-   └─ Pipeline health
+```mermaid
+graph LR
+    A[REST API] --> B[Python ETL]
+    B --> C[Validation]
+    C --> D[SQL Database]
+    D --> E[Reporting Views]
+    E --> F[Power BI]
+    F --> G[Refresh]
+    B --> H[Audit Logs]
+    D --> H
 ```
+
+Detailed architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 ## What This Demonstrates
 
@@ -44,10 +40,39 @@ Power BI
 | ETL | Python extraction, transformation and load |
 | Data quality | Required-field, type, range and duplicate checks |
 | SQL | Relational tables and analytics views |
-| Automation | Single-command pipeline runner |
+| Automation | GitHub Actions scheduled workflow |
 | BI | Power BI-ready reporting model and DAX |
 | Monitoring | Pipeline audit table and logs |
 | Production thinking | Environment variables and failure handling |
+
+## Power BI Dashboard Concept
+
+Recommended pages:
+
+**01 — Executive Overview**
+- Product count
+- Average price
+- Average rating
+- Total reviews
+- Category distribution
+
+**02 — Category Analysis**
+- Average price by category
+- Average rating by category
+- Product volume
+
+**03 — Catalog Quality**
+- Rating bands
+- Price bands
+- Products requiring review
+
+**04 — Pipeline Health**
+- Latest run status
+- Refresh timestamp
+- Records loaded
+- Failure message
+
+DAX measures are documented in [`powerbi/DAX_MEASURES.md`](powerbi/DAX_MEASURES.md).
 
 ## Quick Start
 
@@ -61,13 +86,9 @@ python -m src.pipeline
 
 The default configuration uses SQLite, so the project can run locally without a database server.
 
-## Power BI
+## Automation
 
-Connect Power BI to `vw_product_reporting` and build four pages: Executive Overview, Category Analysis, Catalog Quality, and Pipeline Health.
-
-Recommended measures are documented in `powerbi/DAX_MEASURES.md`.
-
-The optional Power BI REST API refresh integration is documented in `src/powerbi_refresh.py` and controlled through environment variables.
+The repository contains a GitHub Actions workflow that can run the pipeline on demand or on a daily schedule. Production deployments can add database and Power BI credentials through GitHub Secrets.
 
 ## Production Extensions
 
@@ -77,7 +98,7 @@ The optional Power BI REST API refresh integration is documented in `src/powerbi
 - Airflow / Azure Data Factory orchestration
 - dbt / Great Expectations testing
 - Teams or email alerts for failed runs
-- GitHub Actions scheduling
+- Power BI Service refresh monitoring
 
 ## Resume-ready statement
 
